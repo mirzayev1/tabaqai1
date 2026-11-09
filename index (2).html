@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tabaq AI</title>
+<script src="https://telegram.org/js/telegram-web-app.js?64"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F7F2;--surface:#FFFFFF;--soft:#F0F3EC;--ink:#14201A;--muted:#45534B;--border:#E3E7DD;
+  --accent:#17753F;--accent-soft:#E4F1E7;--accent-text:#17753F;--band:#14201A;--on-accent:#FFFFFF;
+  --warn-bg:#FCEBDD;--warn-ink:#8A3B0C;
+}
+:root[data-theme="dark"]{
+  --bg:#0E1411;--surface:#161F1A;--soft:#1D2822;--ink:#EEF2EC;--muted:#A9B5AD;--border:#2A372F;
+  --accent-soft:#1B3124;--accent-text:#7FD39B;--band:#1A2620;--warn-bg:#3A2616;--warn-ink:#FFD9BD;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1411;--surface:#161F1A;--soft:#1D2822;--ink:#EEF2EC;--muted:#A9B5AD;--border:#2A372F;
+    --accent-soft:#1B3124;--accent-text:#7FD39B;--band:#1A2620;--warn-bg:#3A2616;--warn-ink:#FFD9BD;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;margin:0;line-height:1.12;letter-spacing:-0.01em}
+p{margin:0}
+a{color:var(--accent-text)}
+button{font:inherit;color:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #2D6CDF;outline-offset:2px}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px}
+main{padding-bottom:calc(32px + env(safe-area-inset-bottom))}
+body.no-tg main{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+
+/* header */
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:10px;padding-bottom:10px}
+.logo{display:flex;align-items:center;gap:10px;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:18px}
+.logo-mark{width:34px;height:34px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center}
+.lang{display:flex;border:1px solid var(--border);border-radius:999px;padding:3px}
+.lang button{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px;min-width:44px;min-height:36px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+section{padding:32px 0}
+.eyebrow{font-weight:600;color:var(--accent-text);font-size:14px}
+.sec-head{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.sec-head h2{font-size:28px}
+.muted{color:var(--muted)}
+
+/* hero */
+.hero{padding-top:24px;display:flex;flex-direction:column;gap:18px}
+.badge{align-self:flex-start;background:var(--accent-soft);color:var(--accent-text);font-weight:600;font-size:13px;padding:7px 12px;border-radius:999px}
+.hero h1{font-size:clamp(32px,9vw,42px);letter-spacing:-0.02em}
+.hero .lead{font-size:17px;color:var(--muted)}
+.today{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.today-row{display:flex;align-items:center;gap:14px}
+.macros{flex:1;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted)}
+.bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px}
+.dish{display:flex;align-items:center;gap:12px;background:var(--soft);border-radius:16px;padding:10px}
+.dish-img{width:64px;height:64px;border-radius:12px;background:#F3E6D3;flex:none;display:flex;align-items:center;justify-content:center}
+.dish-txt{flex:1;display:flex;flex-direction:column;gap:2px}
+.dish-txt b{font-size:15px}
+.dish-txt span{font-size:12px;color:var(--muted)}
+.dish-kcal{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:18px}
+.tag{display:inline-block;font-size:11px;font-weight:600;color:var(--accent-text);background:var(--accent-soft);padding:3px 8px;border-radius:999px;align-self:flex-start}
+
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;padding:14px 18px;border-radius:16px;border:0;font-weight:600;font-size:16px;cursor:pointer;text-decoration:none}
+.btn-accent{background:var(--accent);color:var(--on-accent)}
+.btn-ink{background:var(--ink);color:var(--bg)}
+.btn-line{background:transparent;color:var(--ink);border:1px solid var(--border)}
+
+/* bot card */
+.bot{background:var(--accent);color:#FFFFFF;border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.bot h2{font-size:24px}
+.bot p{color:#E6F3EA}
+.bot .btn{background:#FFFFFF;color:#14201A}
+
+/* steps & features */
+.list{display:flex;flex-direction:column;gap:12px}
+.item{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;display:flex;gap:14px;align-items:flex-start}
+.item h3{font-size:17px;margin-bottom:4px}
+.item p{color:var(--muted);font-size:15px}
+.num{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:26px;color:var(--accent-text);min-width:36px}
+.ico{width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent-text);display:flex;align-items:center;justify-content:center;flex:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chips span{font-size:13px;background:var(--soft);padding:5px 10px;border-radius:999px}
+
+/* calculator */
+.calc{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:18px}
+.field-label{font-weight:600;font-size:14px;margin-bottom:8px;display:block}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{min-height:44px;padding:10px 16px;border-radius:999px;border:1px solid var(--border);background:var(--surface);font-weight:600;cursor:pointer}
+.pill[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.act{min-height:64px;padding:10px 12px;border-radius:16px;border:1px solid var(--border);background:var(--surface);text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.act b{font-size:15px}
+.act span{font-size:12px;opacity:.85}
+.act[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.inp{width:100%;min-height:48px;padding:0 14px;border-radius:14px;border:1px solid var(--border);background:var(--bg);color:var(--ink);font:inherit;font-size:17px}
+.result{background:var(--band);color:#FFFFFF;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.result .big{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:52px;line-height:1}
+.result .unit{color:#C9D3CC;font-size:15px}
+.result .cell{background:rgba(255,255,255,.08);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:2px}
+.result .cell span{font-size:12px;color:#C9D3CC}
+.result .cell b{font-family:"Space Grotesk",sans-serif;font-size:19px}
+.floor{background:var(--warn-bg);color:var(--warn-ink);border-radius:12px;padding:10px 12px;font-size:14px}
+.disc{font-size:12px;color:var(--muted)}
+
+/* pricing */
+.plans{display:flex;flex-direction:column;gap:12px}
+.plan{border:1px solid var(--border);background:var(--surface);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.plan.featured{border:2px solid var(--accent)}
+.plan-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.plan h3{font-size:19px}
+.price{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:30px}
+.price small{font-family:Inter,sans-serif;font-weight:500;font-size:14px;color:var(--muted)}
+.plan ul{margin:0;padding-left:20px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+
+/* faq */
+details{background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:10px}
+summary{list-style:none;cursor:pointer;padding:16px 18px;min-height:44px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:600}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:22px;color:var(--accent-text);line-height:1}
+details[open] summary::after{content:"−"}
+details p{padding:0 18px 16px;color:var(--muted)}
+
+.stores{display:flex;flex-direction:column;gap:10px}
+footer{padding:24px 0 8px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px}
+footer nav{display:flex;flex-wrap:wrap;gap:14px}
+footer a{color:var(--muted)}
+
+.fallback-cta{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--border);display:none}
+body.no-tg .fallback-cta{display:block}
+.fallback-cta .btn{max-width:488px;margin:0 auto}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="logo">
+      <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/></svg></span>
+      <span>Tabaq AI</span>
+    </div>
+    <div class="lang" role="group" aria-label="Til / Язык">
+      <button type="button" data-lang="uz" aria-pressed="true">UZ</button>
+      <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<div class="fallback-cta"><button type="button" class="btn btn-accent" id="fallbackBtn"></button></div>
+
+<script>
+/* ============================================================
+   SOZLAMALAR — faqat shu qismni o'zgartiring
+   ============================================================ */
+const CONFIG = {
+  APP_STORE_URL: "",     // masalan: "https://apps.apple.com/uz/app/..."
+  GOOGLE_PLAY_URL: "",   // masalan: "https://play.google.com/store/apps/details?id=..."
+  BOT_URL: "",           // brauzerda ochilganda: "https://t.me/sizning_bot"
+  PRIVACY_URL: "#",
+  TERMS_URL: "#",
+  PRICE_MONTH: "[NARX]",
+  PRICE_FAMILY: "[NARX]",
+  FREE_PHOTOS: "[SONI]",
+  FAMILY_SIZE: "[SONI]",
+  TRIAL_DAYS: "[KUN]"
+};
+
+/* ============================================================ */
+const tg = window.Telegram && window.Telegram.WebApp;
+const inTG = !!(tg && tg.initData);
+
+const ICONS = {
+  scan: '<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="4"/>',
+  moon: '<path d="M12 3a7 7 0 1 0 8 9 6 6 0 0 1-8-9z"/><path d="M17 3v4M15 5h4"/>',
+  mic: '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  code: '<path d="M4 7h4M4 12h8M4 17h6"/><path d="M15 7h5v10h-5z"/>',
+  chat: '<path d="M4 5h16v11H8l-4 4z"/><path d="M8 10h8"/>',
+  chart: '<path d="M4 19V5M4 19h16"/><path d="M8 15l4-4 3 3 5-6"/>',
+  family: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M14 20a4 4 0 0 1 7-2.6"/>',
+  send: '<path d="M21 4L3 11l6 2 2 6 3-4 5 4z"/><path d="M9 13l8-6"/>',
+  phone: '<rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/>',
+  play: '<path d="M5 3l14 9-14 9z"/>'
+};
+const icon = (k, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
+
+const T = {
+  uz: {
+    badge: "Yangi: ro'za rejimi va oila tarifi",
+    h1: "Tarelkangizni suratga oling — qolganini AI hisoblaydi",
+    lead: "Tabaq AI taomni bir soniyada taniydi, kaloriya, oqsil, yog' va uglevodlarni hisoblaydi va maqsadingizga mos reja tuzadi.",
+    today: "Bugun", kcalOf: "/ 1800 kkal", p: "Oqsil", f: "Yog'", c: "Uglevod", g: "g",
+    dish: "Palov, 1 porsiya", dishMacro: "O: 18 g · Y: 24 g · U: 62 g", aiTag: "AI aniqladi",
+    botTitle: "Shu botning o'zida ishlaydi",
+    botText: "Chatga taom suratini yuboring — kaloriya va makrolar javob sifatida keladi va kundaligingizga qo'shiladi.",
+    botBtn: "Chatga qaytib surat yuborish",
+    howTag: "Qanday ishlaydi", howTitle: "Uch qadam",
+    steps: [
+      ["Suratga oling yoki ayting", "Kamera, galereya, shtrix-kod yoki ovozli xabar — qaysi biri qulay bo'lsa."],
+      ["AI tahlil qiladi", "Porsiya, kaloriya va makrolar avtomatik hisoblanadi. Bir bosishda tuzatasiz."],
+      ["Maqsadga yeting", "Kunlik limit, haftalik grafik va shaxsiy maslahatlar yo'ldan adashtirmaydi."]
+    ],
+    featTag: "Imkoniyatlar", featTitle: "O'zbekiston uchun yaratilgan",
+    national: ["Milliy taomlar bazasi", "Uy va restoran porsiyalari bo'yicha alohida taniydi."],
+    dishes: ["Palov", "Lag'mon", "Manti", "Somsa", "Shurva", "Norin", "Chuchvara"],
+    feats: [
+      ["moon", "Ro'za rejimi", "Ramazonda saharlik va iftorlik uchun alohida hisob."],
+      ["mic", "Ovozli kiritish", "\"Ikki tuxum va bir choy\" deb ayting — ilova o'zi yozadi."],
+      ["code", "Shtrix-kod skaneri", "Qadoqlangan mahsulotlarni bir zumda qo'shing."],
+      ["chat", "AI murabbiy", "Qolgan limitingizga mos ovqat tavsiyasi."],
+      ["chart", "Progress", "Vazn va kaloriya dinamikasi grafiklarda."],
+      ["family", "Oila rejimi", "Bitta obuna — har kimning o'z maqsadi."]
+    ],
+    calcTag: "Bepul kalkulyator", calcTitle: "Kuniga qancha kaloriya kerak?",
+    sex: "Jins", female: "Ayol", male: "Erkak", age: "Yosh", height: "Bo'y, sm", weight: "Vazn, kg",
+    act: "Faollik", acts: [["Kam", "Ofis ishi"], ["Yengil", "1–3 mashg'ulot/hafta"], ["O'rtacha", "3–5 mashg'ulot/hafta"], ["Yuqori", "Har kuni sport"]],
+    goal: "Maqsad", goals: ["Vazn tashlash", "Saqlash", "Mushak oshirish"],
+    result: "Kunlik me'yoringiz", perDay: "kkal / kun", water: "Suv", waterUnit: "l / kun",
+    floor: "Natija xavfsiz minimal darajaga ko'tarildi. Juda kam kaloriya sog'liqqa zarar qilishi mumkin.",
+    disc: "Taxminiy hisob (Mifflin–St Jeor formulasi). Homiladorlik, kasallik yoki parhez bo'lsa, shifokor bilan maslahatlashing.",
+    priceTag: "Tariflar", priceTitle: "Bepul boshlang",
+    plans: [
+      { name: "Bepul", price: "0", unit: "so'm", items: [`Kuniga ${CONFIG.FREE_PHOTOS} ta surat`, "Kaloriya va makrolar", "Suv va vazn kundaligi"], cta: "Boshlash" },
+      { name: "Premium", price: CONFIG.PRICE_MONTH, unit: "so'm / oy", items: ["Cheksiz surat va ovoz", "AI murabbiy va menyu", "Ro'za rejimi va hisobotlar"], cta: `${CONFIG.TRIAL_DAYS} kun bepul sinash`, featured: true, tag: "Mashhur" },
+      { name: "Oila", price: CONFIG.PRICE_FAMILY, unit: "so'm / yil", items: ["Premium'ning hammasi", `${CONFIG.FAMILY_SIZE} tagacha a'zo`, "Oylikdan tejamkor"], cta: "Oila tarifini tanlash" }
+    ],
+    pay: "Click, Payme va Uzum orqali to'lash mumkin.",
+    faqTitle: "Savollar",
+    faqs: [
+      ["Kaloriya qanchalik aniq?", "Natija porsiya va surat sifatiga bog'liq. Har bir taomni qo'lda tuzatish mumkin, ilova tuzatishlaringizdan o'rganadi."],
+      ["Milliy taomlarni taniydimi?", "Ha. Palov, lag'mon, manti, somsa, shurva kabi taomlar alohida o'rgatilgan."],
+      ["Bot bilan ilovaning farqi nima?", "Bot — tez surat yuborish uchun. Ilovada esa grafiklar, AI murabbiy va to'liq kundalik bor. Ikkalasi bitta hisobga ulanadi."],
+      ["Ma'lumotlarim xavfsizmi?", "Suratlar va kundalik faqat sizning hisobingizda saqlanadi va uchinchi shaxslarga berilmaydi."]
+    ],
+    dlTitle: "Ilovani yuklab oling", mainBtn: "Ilovani yuklab olish",
+    privacy: "Maxfiylik siyosati", terms: "Foydalanish shartlari", rights: "© 2026 Tabaq AI"
+  },
+  ru: {
+    badge: "Новое: режим поста и семейный тариф",
+    h1: "Сфотографируйте тарелку — остальное посчитает ИИ",
+    lead: "Tabaq AI за секунду распознаёт блюдо, считает калории, белки, жиры и углеводы и составляет план под вашу цель.",
+    today: "Сегодня", kcalOf: "/ 1800 ккал", p: "Белки", f: "Жиры", c: "Углеводы", g: "г",
+    dish: "Плов, 1 порция", dishMacro: "Б: 18 г · Ж: 24 г · У: 62 г", aiTag: "Распознано ИИ",
+    botTitle: "Работает прямо в этом боте",
+    botText: "Отправьте фото блюда в чат — калории и макросы придут в ответ и попадут в дневник.",
+    botBtn: "Вернуться в чат и отправить фото",
+    howTag: "Как это работает", howTitle: "Три шага",
+    steps: [
+      ["Сфотографируйте или скажите", "Камера, галерея, штрих-код или голосовое — как удобнее."],
+      ["ИИ анализирует", "Порция, калории и макросы считаются автоматически. Правка — одним касанием."],
+      ["Достигайте цели", "Дневной лимит, недельный график и личные советы держат на курсе."]
+    ],
+    featTag: "Возможности", featTitle: "Создано для Узбекистана",
+    national: ["База национальных блюд", "Различает домашние и ресторанные порции."],
+    dishes: ["Плов", "Лагман", "Манты", "Самса", "Шурпа", "Нарын", "Чучвара"],
+    feats: [
+      ["moon", "Режим поста", "В Рамадан — отдельный учёт сухура и ифтара."],
+      ["mic", "Голосовой ввод", "Скажите «два яйца и чай» — приложение запишет само."],
+      ["code", "Сканер штрих-кодов", "Добавляйте упакованные продукты за секунду."],
+      ["chat", "ИИ-тренер", "Совет по еде под оставшийся лимит."],
+      ["chart", "Прогресс", "Динамика веса и калорий на графиках."],
+      ["family", "Семейный режим", "Одна подписка — у каждого свои цели."]
+    ],
+    calcTag: "Бесплатный калькулятор", calcTitle: "Сколько калорий нужно в день?",
+    sex: "Пол", female: "Женщина", male: "Мужчина", age: "Возраст", height: "Рост, см", weight: "Вес, кг",
+    act: "Активность", acts: [["Низкая", "Офис"], ["Лёгкая", "1–3 трен./нед."], ["Средняя", "3–5 трен./нед."], ["Высокая", "Спорт каждый день"]],
+    goal: "Цель", goals: ["Похудеть", "Держать вес", "Набрать мышцы"],
+    result: "Ваша дневная норма", perDay: "ккал / день", water: "Вода", waterUnit: "л / день",
+    floor: "Результат поднят до безопасного минимума. Слишком мало калорий может навредить здоровью.",
+    disc: "Приблизительный расчёт (формула Миффлина — Сан Жеора). При беременности, болезнях или диете проконсультируйтесь с врачом.",
+    priceTag: "Тарифы", priceTitle: "Начните бесплатно",
+    plans: [
+      { name: "Бесплатно", price: "0", unit: "сум", items: [`${CONFIG.FREE_PHOTOS} фото в день`, "Калории и макросы", "Дневник воды и веса"], cta: "Начать" },
+      { name: "Premium", price: CONFIG.PRICE_MONTH, unit: "сум / мес", items: ["Безлимит фото и голоса", "ИИ-тренер и меню", "Режим поста и отчёты"], cta: `${CONFIG.TRIAL_DAYS} дней бесплатно`, featured: true, tag: "Популярный" },
+      { name: "Семья", price: CONFIG.PRICE_FAMILY, unit: "сум / год", items: ["Всё из Premium", `До ${CONFIG.FAMILY_SIZE} человек`, "Выгоднее помесячной"], cta: "Выбрать семейный" }
+    ],
+    pay: "Оплата через Click, Payme и Uzum.",
+    faqTitle: "Вопросы",
+    faqs: [
+      ["Насколько точен подсчёт?", "Зависит от порции и качества фото. Любое блюдо можно поправить вручную, приложение учится на правках."],
+      ["Распознаёт национальные блюда?", "Да. Плов, лагман, манты, самса, шурпа и другие обучены отдельно."],
+      ["Чем бот отличается от приложения?", "Бот — для быстрой отправки фото. В приложении — графики, ИИ-тренер и полный дневник. Оба работают с одним аккаунтом."],
+      ["Мои данные в безопасности?", "Фото и дневник хранятся только в вашем аккаунте и не передаются третьим лицам."]
+    ],
+    dlTitle: "Скачайте приложение", mainBtn: "Скачать приложение",
+    privacy: "Политика конфиденциальности", terms: "Условия использования", rights: "© 2026 Tabaq AI"
+  }
+};
+
+const state = { lang: "uz", sex: "f", age: "28", height: "165", weight: "68", act: 1, goal: 0 };
+const ACT_K = [1.2, 1.375, 1.55, 1.725];
+const GOAL_D = [-500, 0, 300];
+
+/* --- helpers --- */
+const $ = (s, r = document) => r.querySelector(s);
+const haptic = () => { try { tg && tg.HapticFeedback && tg.HapticFeedback.selectionChanged(); } catch (e) {} };
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+
+function detectLang() {
+  const saved = store.get("tabaq_lang");
+  if (saved === "uz" || saved === "ru") return saved;
+  const code = (inTG && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) || navigator.language || "uz";
+  return /^ru/i.test(code) ? "ru" : "uz";
+}
+
+function storeUrl() {
+  const p = (tg && tg.platform) || "";
+  const ua = navigator.userAgent || "";
+  const ios = p === "ios" || p === "macos" || /iPhone|iPad|Mac/i.test(ua);
+  return ios ? (CONFIG.APP_STORE_URL || CONFIG.GOOGLE_PLAY_URL) : (CONFIG.GOOGLE_PLAY_URL || CONFIG.APP_STORE_URL);
+}
+
+function openUrl(url) {
+  if (!url) { const d = $("#download"); d && d.scrollIntoView({ behavior: "smooth" }); return; }
+  if (inTG && tg.openLink) tg.openLink(url); else window.open(url, "_blank", "noopener");
+}
+
+function onMainCta() { haptic(); openUrl(storeUrl()); }
+
+/* --- render --- */
+function render() {
+  const t = T[state.lang];
+  document.documentElement.lang = state.lang;
+  document.querySelectorAll(".lang button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === state.lang)));
+
+  $("#app").innerHTML = `
+  <section class="hero">
+    <span class="badge">${t.badge}</span>
+    <h1>${t.h1}</h1>
+    <p class="lead">${t.lead}</p>
+    <div class="today" aria-label="${t.today}">
+      <div class="today-row">
+        <svg width="96" height="96" viewBox="0 0 100 100" role="img" aria-label="1240 ${t.kcalOf}">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border)" stroke-width="11"/>
+          <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" stroke-width="11" stroke-linecap="round" stroke-dasharray="173 251" transform="rotate(-90 50 50)"/>
+          <text x="50" y="49" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="20" fill="var(--ink)">1240</text>
+          <text x="50" y="65" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="var(--muted)">${t.kcalOf}</text>
+        </svg>
+        <div class="macros">
+          <div>${t.p} 72 ${t.g}<div class="bar"><i style="width:70%;background:#2D6CDF"></i></div></div>
+          <div>${t.f} 41 ${t.g}<div class="bar"><i style="width:55%;background:#E0782F"></i></div></div>
+          <div>${t.c} 138 ${t.g}<div class="bar"><i style="width:62%;background:var(--ink)"></i></div></div>
+        </div>
+      </div>
+      <div class="dish">
+        <div class="dish-img"><svg width="52" height="40" viewBox="0 0 150 110" aria-hidden="true"><ellipse cx="75" cy="60" rx="66" ry="42" fill="#FFFFFF"/><ellipse cx="75" cy="58" rx="50" ry="30" fill="#E8B04A"/><circle cx="60" cy="52" r="6" fill="#D9762B"/><circle cx="84" cy="62" r="7" fill="#D9762B"/><rect x="64" y="38" width="24" height="15" rx="4" fill="#8A4B2A"/></svg></div>
+        <div class="dish-txt"><span class="tag">${t.aiTag}</span><b>${t.dish}</b><span>${t.dishMacro}</span></div>
+        <span class="dish-kcal">540</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:8px">
+    <div class="bot">
+      ${icon("send", 30)}
+      <h2>${t.botTitle}</h2>
+      <p>${t.botText}</p>
+      <button type="button" class="btn" id="botBtn">${t.botBtn}</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="eyebrow">${t.howTag}</span><h2>${t.howTitle}</h2></div>
+    <div class="list">
+      ${t.steps.map((s, i) => `<div class="item"><span class="num">0${i + 1}</span><div><h3>${s[0]}</h3><p>${s[1]}</p></div></div>`).join("")}
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="eyebrow">${t.featTag}</span><h2>${t.featTitle}</h2></div>
+    <div class="list">
+      <div class="item" style="flex-direction:column;gap:6px;border-color:var(--accent)">
+        <h3>${t.national[0]}</h3><p>${t.national[1]}</p>
+        <div class="chips">${t.dishes.map((d) => `<span>${d}</span>`).join("")}</div>
+      </div>
+      ${t.feats.map((f) => `<div class="item"><span class="ico">${icon(f[0])}</span><div><h3>${f[1]}</h3><p>${f[2]}</p></div></div>`).join("")}
+    </div>
+  </section>
+
+  <section id="calc">
+    <div class="sec-head"><span class="eyebrow">${t.calcTag}</span><h2>${t.calcTitle}</h2></div>
+    <div class="calc">
+      <div>
+        <span class="field-label">${t.sex}</span>
+        <div class="pills">
+          <button type="button" class="pill" data-sex="f" aria-pressed="${state.sex === "f"}">${t.female}</button>
+          <button type="button" class="pill" data-sex="m" aria-pressed="${state.sex === "m"}">${t.male}</button>
+        </div>
+      </div>
+      <div class="grid3">
+        <div><label class="field-label" for="age">${t.age}</label><input class="inp" id="age" type="number" inputmode="numeric" min="14" max="90" value="${state.age}"></div>
+        <div><label class="field-label" for="height">${t.height}</label><input class="inp" id="height" type="number" inputmode="numeric" min="120" max="230" value="${state.height}"></div>
+        <div><label class="field-label" for="weight">${t.weight}</label><input class="inp" id="weight" type="number" inputmode="decimal" min="35" max="250" value="${state.weight}"></div>
+      </div>
+      <div>
+        <span class="field-label">${t.act}</span>
+        <div class="grid2">
+          ${t.acts.map((a, i) => `<button type="button" class="act" data-act="${i}" aria-pressed="${state.act === i}"><b>${a[0]}</b><span>${a[1]}</span></button>`).join("")}
+        </div>
+      </div>
+      <div>
+        <span class="field-label">${t.goal}</span>
+        <div class="pills">
+          ${t.goals.map((g, i) => `<button type="button" class="pill" data-goal="${i}" aria-pressed="${state.goal === i}">${g}</button>`).join("")}
+        </div>
+      </div>
+      <div class="result" aria-live="polite">
+        <span class="unit">${t.result}</span>
+        <div><span class="big" id="rKcal">—</span> <span class="unit">${t.perDay}</span></div>
+        <p class="floor" id="rFloor" hidden>${t.floor}</p>
+        <div class="grid3">
+          <div class="cell"><span>${t.p}</span><b id="rP">—</b></div>
+          <div class="cell"><span>${t.f}</span><b id="rF">—</b></div>
+          <div class="cell"><span>${t.c}</span><b id="rC">—</b></div>
+        </div>
+        <div class="cell" style="flex-direction:row;justify-content:space-between;align-items:center"><span>${t.water}</span><b><span id="rW">—</span> ${t.waterUnit}</b></div>
+      </div>
+      <p class="disc">${t.disc}</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="eyebrow">${t.priceTag}</span><h2>${t.priceTitle}</h2></div>
+    <div class="plans">
+      ${t.plans.map((p) => `
+        <div class="plan${p.featured ? " featured" : ""}">
+          <div class="plan-head"><h3>${p.name}</h3>${p.tag ? `<span class="badge">${p.tag}</span>` : ""}</div>
+          <div class="price">${p.price} <small>${p.unit}</small></div>
+          <ul>${p.items.map((x) => `<li>${x}</li>`).join("")}</ul>
+          <button type="button" class="btn ${p.featured ? "btn-accent" : "btn-line"}" data-cta>${p.cta}</button>
+        </div>`).join("")}
+    </div>
+    <p class="disc" style="margin-top:12px">${t.pay}</p>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>${t.faqTitle}</h2></div>
+    ${t.faqs.map((q, i) => `<details${i === 0 ? " open" : ""}><summary>${q[0]}</summary><p>${q[1]}</p></details>`).join("")}
+  </section>
+
+  <section id="download">
+    <div class="sec-head"><h2>${t.dlTitle}</h2></div>
+    <div class="stores">
+      <button type="button" class="btn btn-ink" data-store="ios">${icon("phone")} App Store</button>
+      <button type="button" class="btn btn-ink" data-store="android">${icon("play")} Google Play</button>
+    </div>
+    <footer>
+      <nav><a href="${CONFIG.PRIVACY_URL}">${t.privacy}</a><a href="${CONFIG.TERMS_URL}">${t.terms}</a></nav>
+      <span>${t.rights}</span>
+    </footer>
+  </section>`;
+
+  $("#fallbackBtn").textContent = t.mainBtn;
+  if (inTG && tg.MainButton) {
+    tg.MainButton.setParams({ text: t.mainBtn, color: getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#17753F", text_color: "#FFFFFF", is_visible: true, is_active: true });
+  }
+  updateCalc();
+}
+
+/* --- calculator --- */
+function num(v, lo, hi) {
+  const x = parseFloat(String(v).replace(",", "."));
+  return isFinite(x) && x >= lo && x <= hi ? x : null;
+}
+function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+
+function updateCalc() {
+  const t = T[state.lang];
+  const age = num(state.age, 14, 90), h = num(state.height, 120, 230), w = num(state.weight, 35, 250);
+  let kcal = null, floorHit = false;
+  if (age && h && w) {
+    const bmr = 10 * w + 6.25 * h - 5 * age + (state.sex === "m" ? 5 : -161);
+    let v = bmr * ACT_K[state.act] + GOAL_D[state.goal];
+    const floor = state.sex === "m" ? 1500 : 1200;
+    if (v < floor) { v = floor; floorHit = true; }
+    kcal = Math.round(v / 10) * 10;
+  }
+  $("#rKcal").textContent = kcal ? fmt(kcal) : "—";
+  $("#rFloor").hidden = !floorHit;
+  $("#rP").textContent = kcal ? Math.round(kcal * 0.3 / 4) + " " + t.g : "—";
+  $("#rF").textContent = kcal ? Math.round(kcal * 0.3 / 9) + " " + t.g : "—";
+  $("#rC").textContent = kcal ? Math.round(kcal * 0.4 / 4) + " " + t.g : "—";
+  $("#rW").textContent = w ? String(Math.round(w * 0.033 * 10) / 10).replace(".", ",") : "—";
+}
+
+function setPressed(attr, value) {
+  document.querySelectorAll(`[data-${attr}]`).forEach((b) => b.setAttribute("aria-pressed", String(b.dataset[attr] === String(value))));
+}
+
+/* --- events --- */
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  if (b.dataset.lang) {
+    if (state.lang !== b.dataset.lang) { state.lang = b.dataset.lang; store.set("tabaq_lang", state.lang); haptic(); render(); }
+  } else if (b.dataset.sex) {
+    state.sex = b.dataset.sex; setPressed("sex", state.sex); haptic(); updateCalc();
+  } else if (b.dataset.act !== undefined) {
+    state.act = +b.dataset.act; setPressed("act", state.act); haptic(); updateCalc();
+  } else if (b.dataset.goal !== undefined) {
+    state.goal = +b.dataset.goal; setPressed("goal", state.goal); haptic(); updateCalc();
+  } else if (b.dataset.store) {
+    haptic(); openUrl(b.dataset.store === "ios" ? CONFIG.APP_STORE_URL : CONFIG.GOOGLE_PLAY_URL);
+  } else if (b.hasAttribute("data-cta") || b.id === "fallbackBtn") {
+    onMainCta();
+  } else if (b.id === "botBtn") {
+    haptic();
+    if (inTG) tg.close(); else if (CONFIG.BOT_URL) openUrl(CONFIG.BOT_URL);
+  }
+});
+document.addEventListener("input", (e) => {
+  const id = e.target.id;
+  if (id === "age" || id === "height" || id === "weight") { state[id] = e.target.value; updateCalc(); }
+});
+
+/* --- Telegram integration --- */
+function applyTheme() {
+  if (!inTG) return;
+  document.documentElement.setAttribute("data-theme", tg.colorScheme === "dark" ? "dark" : "light");
+  const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
+  try { tg.setHeaderColor(bg); tg.setBackgroundColor(bg); } catch (e) {}
+}
+
+if (inTG) {
+  tg.ready();
+  tg.expand();
+  applyTheme();
+  tg.onEvent("themeChanged", applyTheme);
+  tg.MainButton.onClick(onMainCta);
+} else {
+  document.body.classList.add("no-tg");
+}
+
+state.lang = detectLang();
+render();
+</script>
+</body>
+</html>
